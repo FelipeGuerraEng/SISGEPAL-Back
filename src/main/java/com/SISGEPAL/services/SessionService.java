@@ -8,13 +8,9 @@ import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.exceptions.UnauthorizedException;
 import com.SISGEPAL.repositories.LoginRepository;
 import com.SISGEPAL.utils.JWTUtil;
-import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
