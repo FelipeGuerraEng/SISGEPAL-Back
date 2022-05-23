@@ -2,7 +2,6 @@ package com.SISGEPAL.filters;
 
 import com.SISGEPAL.DTO.session.ErrorResponse;
 import com.SISGEPAL.entities.Empleado;
-import com.SISGEPAL.exceptions.UnauthorizedException;
 import com.SISGEPAL.services.EmpleadoService;
 import com.SISGEPAL.services.SessionService;
 import com.SISGEPAL.utils.JWTUtil;
@@ -11,7 +10,6 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
