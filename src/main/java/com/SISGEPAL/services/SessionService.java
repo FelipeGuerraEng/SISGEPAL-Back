@@ -29,6 +29,7 @@ public class SessionService {
     @Autowired
     JWTUtil jwtUtil;
 
+    @Autowired
     private PasswordEncoder encoder;
 
     @Autowired
@@ -93,8 +94,5 @@ public class SessionService {
         return grantedAuthorities;
     }
 
-    @Bean
-    public PasswordEncoder encoder(){
-        return new BCryptPasswordEncoder();
-    }
+
 }
