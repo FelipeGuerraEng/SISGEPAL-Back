@@ -20,7 +20,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(authenticationFilter,UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/session").permitAll()
-                .antMatchers("/helloAdmin").hasRole("ADMIN")
+                .antMatchers("/empleados").hasRole("ADMIN")
                 .antMatchers("/hello").hasAnyRole("USER","ADMIN")
                 .anyRequest().authenticated();
 

@@ -1,9 +1,9 @@
 package com.SISGEPAL.repositories;
 
-import com.SISGEPAL.entities.Login;
+import com.SISGEPAL.entities.LoginEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LoginRepository extends JpaRepository<Login, Integer> {
+public interface LoginRepository extends JpaRepository<LoginEntity, Integer> {
 
-    public Login findByUsuario(String user);
+    public LoginEntity findByUsuario(String user);
 }

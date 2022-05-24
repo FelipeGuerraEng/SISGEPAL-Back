@@ -1,6 +1,6 @@
 package com.SISGEPAL.controllers;
 
-import com.SISGEPAL.DTO.session.request.User;
+import com.SISGEPAL.DTO.session.request.UserDTO;
 import com.SISGEPAL.DTO.session.response.Session;
 import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.exceptions.UnauthorizedException;
@@ -18,7 +18,7 @@ public class SessioController {
     public SessionService sessionService;
 
     @PostMapping
-    public ResponseEntity<Session> getHelloWorld(@RequestBody User user) throws NotFoundException, UnauthorizedException {
+    public ResponseEntity<Session> getHelloWorld(@RequestBody UserDTO user) throws NotFoundException, UnauthorizedException {
 
         return new ResponseEntity<Session>(sessionService.validateSession(user), HttpStatus.CREATED);
     }

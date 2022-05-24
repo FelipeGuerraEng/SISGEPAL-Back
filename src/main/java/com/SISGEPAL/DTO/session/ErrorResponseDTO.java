@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ErrorResponse {
+public class ErrorResponseDTO {
     private String error;
 }

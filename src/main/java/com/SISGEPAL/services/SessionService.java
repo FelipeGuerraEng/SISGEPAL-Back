@@ -1,9 +1,9 @@
 package com.SISGEPAL.services;
 
-import com.SISGEPAL.DTO.session.request.User;
+import com.SISGEPAL.DTO.session.request.UserDTO;
 import com.SISGEPAL.DTO.session.response.Session;
-import com.SISGEPAL.entities.Empleado;
-import com.SISGEPAL.entities.Login;
+import com.SISGEPAL.entities.EmpleadoEntity;
+import com.SISGEPAL.entities.LoginEntity;
 import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.exceptions.UnauthorizedException;
 import com.SISGEPAL.repositories.LoginRepository;
@@ -34,8 +34,8 @@ public class SessionService {
     @Autowired
     private AdministradorService administradorService;
 
-    public Session validateSession(User user) throws NotFoundException, UnauthorizedException {
-        Login userLogin = loginRepository.findByUsuario(user.getUsername());
+    public Session validateSession(UserDTO user) throws NotFoundException, UnauthorizedException {
+        LoginEntity userLogin = loginRepository.findByUsuario(user.getUsername());
 
         if(userLogin == null) {
             throw new NotFoundException(String.format(
@@ -58,10 +58,10 @@ public class SessionService {
         return session;
     }
 
-    public String createToken(User user, Login userLogin){
+    public String createToken(UserDTO user, LoginEntity userLogin){
 
 
-        Empleado empleado = userLogin.getEmpleado();
+        EmpleadoEntity empleado = userLogin.getEmpleado();
         Map<String,Object> claims = new HashMap<>();
         List<GrantedAuthority> authorities = createAuthorities(empleado);
 
@@ -78,7 +78,7 @@ public class SessionService {
         return jwtUtil.createToken(claims,empleado.getCedula());
     }
 
-    public List<GrantedAuthority> createAuthorities(Empleado empleado){
+    public List<GrantedAuthority> createAuthorities(EmpleadoEntity empleado){
         List<GrantedAuthority> grantedAuthorities = null;
         if(administradorService.isAdministrador(empleado)){
             grantedAuthorities = AuthorityUtils
