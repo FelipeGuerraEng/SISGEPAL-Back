@@ -1,6 +1,7 @@
 package com.SISGEPAL.controllers;
 
 import com.SISGEPAL.DTO.session.ErrorResponseDTO;
+import com.SISGEPAL.exceptions.BadRequestException;
 import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -23,5 +24,12 @@ public class AdviseController {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO();
         errorResponse.setError(ex.getMessage());
         return new ResponseEntity<ErrorResponseDTO>(errorResponse,HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadRequestException(Exception ex){
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO();
+        errorResponse.setError(ex.getMessage());
+        return new ResponseEntity<ErrorResponseDTO>(errorResponse,HttpStatus.BAD_REQUEST);
     }
 }

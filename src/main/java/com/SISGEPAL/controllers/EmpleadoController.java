@@ -1,14 +1,15 @@
 package com.SISGEPAL.controllers;
 
 
+import com.SISGEPAL.DTO.empleados.request.NewEmpleadoDTO;
+import com.SISGEPAL.DTO.empleados.response.EmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadosDTO;
+import com.SISGEPAL.exceptions.BadRequestException;
 import com.SISGEPAL.services.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/empleados")
@@ -26,5 +27,16 @@ public class EmpleadoController {
                 = new ResponseEntity<EmpleadosDTO>(empleadosDTO, HttpStatus.OK);
 
         return response;
+    }
+
+    @PostMapping
+    public ResponseEntity<EmpleadoDTO> postEmpleado(@RequestBody NewEmpleadoDTO newEmpleadoDTO)
+            throws BadRequestException {
+        EmpleadoDTO empleadoDTO =
+                empleadoService.mapToEmpleadoDTO(empleadoService.createEmpleado(newEmpleadoDTO));
+        ResponseEntity<EmpleadoDTO> response
+                = new ResponseEntity<EmpleadoDTO>(empleadoDTO,HttpStatus.OK);
+        return response;
+
     }
 }
