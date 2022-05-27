@@ -2,6 +2,7 @@ package com.SISGEPAL.controllers;
 
 import com.SISGEPAL.DTO.session.ErrorResponseDTO;
 import com.SISGEPAL.exceptions.BadRequestException;
+import com.SISGEPAL.exceptions.ConflictException;
 import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -31,5 +32,12 @@ public class AdviseController {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO();
         errorResponse.setError(ex.getMessage());
         return new ResponseEntity<ErrorResponseDTO>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponseDTO> handleConflictException(Exception ex){
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO();
+        errorResponse.setError(ex.getMessage());
+        return new ResponseEntity<ErrorResponseDTO>(errorResponse,HttpStatus.CONFLICT);
     }
 }

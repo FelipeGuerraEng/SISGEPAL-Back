@@ -4,18 +4,25 @@ package com.SISGEPAL.controllers;
 import com.SISGEPAL.DTO.empleados.request.NewEmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadosDTO;
+import com.SISGEPAL.DTO.SendEmail;
 import com.SISGEPAL.exceptions.BadRequestException;
 import com.SISGEPAL.services.EmpleadoService;
+import com.SISGEPAL.services.MailingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
 
 @RestController
 @RequestMapping("/empleados")
 public class EmpleadoController {
     @Autowired
     private EmpleadoService empleadoService;
+
+    @Autowired
+    private MailingService mailingService;
 
     @GetMapping
     public ResponseEntity<EmpleadosDTO> getEmpleados(){
@@ -39,4 +46,18 @@ public class EmpleadoController {
         return response;
 
     }
+
+    @PostMapping("/mail")
+    public String sendEmail(@RequestBody SendEmail sendEmail) throws MessagingException{
+
+        mailingService.sendCredentialEmail(
+                sendEmail.getSubject(),sendEmail.getTo(),
+                sendEmail.getName(), sendEmail.getUsername(),
+                sendEmail.getPassword()
+        );
+
+        return "CHECK IT";
+
+    }
+
 }
