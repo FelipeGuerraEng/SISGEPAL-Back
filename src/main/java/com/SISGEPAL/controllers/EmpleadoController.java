@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/empleados")
@@ -48,7 +49,7 @@ public class EmpleadoController {
     }
 
     @PostMapping("/mail")
-    public String sendEmail(@RequestBody SendEmail sendEmail) throws MessagingException{
+    public String sendEmail(@RequestBody SendEmail sendEmail) throws MessagingException, IOException {
 
         mailingService.sendCredentialEmail(
                 sendEmail.getSubject(),sendEmail.getTo(),
