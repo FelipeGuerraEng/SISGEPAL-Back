@@ -1,14 +1,19 @@
 package com.SISGEPAL.services;
 
 import com.SISGEPAL.DTO.empleados.request.NewEmpleadoDTO;
+import com.SISGEPAL.DTO.empleados.request.UpdateEmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadosDTO;
 import com.SISGEPAL.entities.EmpleadoEntity;
 import com.SISGEPAL.exceptions.BadRequestException;
+import com.SISGEPAL.exceptions.ConflictException;
+import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.repositories.EmpleadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -18,6 +23,10 @@ public class EmpleadoService {
 
     @Autowired
     private EmpleadoRepository empleadoRepository;
+    @Autowired
+    private LoginService loginService;
+    @Autowired
+    private MailingService mailingService;
 
     public EmpleadoEntity findEmpleadoByCedula(String cedula){
         return empleadoRepository.findByCedula(cedula);
@@ -54,12 +63,14 @@ public class EmpleadoService {
         return empleadoDTO;
     }
 
-    public EmpleadoEntity createEmpleado(NewEmpleadoDTO empleadoDTO) throws BadRequestException {
+    public EmpleadoEntity createEmpleado(NewEmpleadoDTO empleadoDTO) throws BadRequestException, ConflictException, MessagingException, IOException {
         final String correo = empleadoDTO.getCorreo();
         final boolean isValidEmailFormat = isValidEmailFormat(correo);
         final boolean isRepeatedEmail = isRepeatedEmail(correo) == 1;
+        final boolean isValidLogin = loginService.isValidNewLogin(empleadoDTO.getUserDTO());
 
-        if(isValidEmailFormat && !isRepeatedEmail) {
+        if(isValidEmailFormat && !isRepeatedEmail
+                && isValidLogin) {
             EmpleadoEntity empleado = new EmpleadoEntity();
 
             empleado.setCedula(empleadoDTO.getCedula());
@@ -69,6 +80,7 @@ public class EmpleadoService {
             empleado.setTelefono(empleadoDTO.getTelefono());
 
             empleado = empleadoRepository.save(empleado);
+            loginService.createLogin(empleadoDTO.getUserDTO(), empleado);
 
             return empleado;
         }
@@ -81,9 +93,60 @@ public class EmpleadoService {
                 message = String.format("Correo en uso: %S",correo);
 
             }
+
+            if(!isValidLogin) {
+                message = String.format("Usuario o contraseña no válidos");
+            }
         }
 
         throw new BadRequestException(message);
+    }
+
+    public EmpleadoEntity updateEmpleado(UpdateEmpleadoDTO empleadoDTO, int empleadoID)
+            throws NotFoundException, BadRequestException, MessagingException, IOException {
+        EmpleadoEntity empleado = empleadoRepository.findById(empleadoID);
+
+        if(empleado == null) {
+            throw new NotFoundException(String.format(
+                    "No existe un empleado con id %d", empleadoID
+            ));
+        }
+
+        final boolean isValidEmailFormat = isValidEmailFormat(empleadoDTO.getCorreo());
+        final int repeatedEmail = isRepeatedEmail(empleadoDTO.getCorreo());
+        final boolean isValidEmail = ( repeatedEmail == 1
+                && empleado.getCorreo().equals(empleadoDTO.getCorreo())) || repeatedEmail == 0;
+        final int repeatedCC = isRepeatedCC(empleadoDTO.getCedula());
+        final boolean isValidCC = ( repeatedCC == 1
+                && empleado.getCedula().equals(empleadoDTO.getCedula())) || repeatedCC == 0;
+
+        if(isValidEmailFormat && isValidEmail && isValidCC ) {
+            final String oldEmail = empleado.getCorreo();
+            final String newEmail = empleadoDTO.getCorreo();
+            empleado.setCedula(empleadoDTO.getCedula());
+            empleado.setNombre(empleadoDTO.getNombre());
+            empleado.setCorreo(newEmail);
+            empleado.setDireccion(empleadoDTO.getDireccion());
+            empleado.setTelefono(empleadoDTO.getTelefono());
+
+            empleadoRepository.save(empleado);
+
+            if(!newEmail.equals(oldEmail)){
+                mailingService.sendUpdatedEmail(newEmail,
+                        empleado.getNombre(), newEmail);
+            }
+
+            return empleado;
+        }
+
+        String message = "";
+
+        message = isValidEmailFormat? "":"Correo no válido-";
+        message += isValidEmail? "":"-Correo en uso";
+        message += isValidCC? "":"-Cédula en uso";
+
+        throw  new BadRequestException(message);
+
     }
 
     public boolean isValidEmailFormat(String email) {
@@ -95,6 +158,11 @@ public class EmpleadoService {
 
     public int isRepeatedEmail(String email) {
         return empleadoRepository.findByCorreo(email) != null ?
+                1 : 0;
+    }
+
+    public int isRepeatedCC(String cc) {
+        return empleadoRepository.findByCedula(cc) != null ?
                 1 : 0;
     }
 }

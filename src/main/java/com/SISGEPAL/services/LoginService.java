@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
+
 @Service
 public class LoginService {
 
@@ -20,19 +23,22 @@ public class LoginService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private LoginRepository loginRepository;
+    @Autowired
+    private MailingService mailingService;
 
-    public boolean isValidUsername(String username) {
-        LoginEntity loginEntity = loginRepository.findByUsuario(username);
-        return loginEntity == null;
+    public boolean isValidNewLogin(UserDTO user) {
+        LoginEntity loginEntity = loginRepository.findByUsuario(user.getUsername());
+        return loginEntity == null && !user.getPassword().trim().equals("");
     }
 
     public String generatePassword(){
         return RandomString.make(passwordLength);
     }
 
-    public LoginEntity createLogin(UserDTO userDTO, EmpleadoEntity empleado) throws ConflictException {
+    public LoginEntity createLogin(UserDTO userDTO, EmpleadoEntity empleado)
+            throws ConflictException, MessagingException, IOException {
 
-        if(isValidUsername((userDTO.getUsername()))) {
+        if(isValidNewLogin((userDTO))) {
             LoginEntity loginEntity = new LoginEntity();
             String generatedPass = generatePassword();
             String cipherPassword = passwordEncoder.encode(generatedPass);
@@ -42,7 +48,8 @@ public class LoginService {
             loginEntity.setPassword(cipherPassword);
 
             loginEntity = loginRepository.save(loginEntity);
-
+            mailingService.sendCredentialEmail(empleado.getCorreo()
+                    ,empleado.getNombre(),loginEntity.getUsuario(), userDTO.getPassword());
             return loginEntity;
         }
 

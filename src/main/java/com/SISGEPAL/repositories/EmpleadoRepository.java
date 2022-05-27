@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface EmpleadoRepository extends JpaRepository<EmpleadoEntity, Integer> {
     public EmpleadoEntity findByCedula(String cedula);
     public EmpleadoEntity findByCorreo(String email);
+    public EmpleadoEntity findById(int id);
 }

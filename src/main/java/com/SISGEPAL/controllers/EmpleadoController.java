@@ -2,10 +2,12 @@ package com.SISGEPAL.controllers;
 
 
 import com.SISGEPAL.DTO.empleados.request.NewEmpleadoDTO;
+import com.SISGEPAL.DTO.empleados.request.UpdateEmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadoDTO;
 import com.SISGEPAL.DTO.empleados.response.EmpleadosDTO;
-import com.SISGEPAL.DTO.SendEmail;
 import com.SISGEPAL.exceptions.BadRequestException;
+import com.SISGEPAL.exceptions.ConflictException;
+import com.SISGEPAL.exceptions.NotFoundException;
 import com.SISGEPAL.services.EmpleadoService;
 import com.SISGEPAL.services.MailingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,7 @@ public class EmpleadoController {
 
     @PostMapping
     public ResponseEntity<EmpleadoDTO> postEmpleado(@RequestBody NewEmpleadoDTO newEmpleadoDTO)
-            throws BadRequestException {
+            throws BadRequestException, ConflictException, MessagingException, IOException {
         EmpleadoDTO empleadoDTO =
                 empleadoService.mapToEmpleadoDTO(empleadoService.createEmpleado(newEmpleadoDTO));
         ResponseEntity<EmpleadoDTO> response
@@ -48,16 +50,15 @@ public class EmpleadoController {
 
     }
 
-    @PostMapping("/mail")
-    public String sendEmail(@RequestBody SendEmail sendEmail) throws MessagingException, IOException {
-
-        mailingService.sendCredentialEmail(
-                sendEmail.getSubject(),sendEmail.getTo(),
-                sendEmail.getName(), sendEmail.getUsername(),
-                sendEmail.getPassword()
-        );
-
-        return "CHECK IT";
+    @PutMapping("/{id}")
+    public ResponseEntity<EmpleadoDTO> putEmpleado(@RequestBody UpdateEmpleadoDTO updateEmpleadoDTO,
+        @PathVariable int id)
+            throws BadRequestException, ConflictException, MessagingException, IOException, NotFoundException {
+        EmpleadoDTO empleadoDTO =
+                empleadoService.mapToEmpleadoDTO(empleadoService.updateEmpleado(updateEmpleadoDTO,id));
+        ResponseEntity<EmpleadoDTO> response
+                = new ResponseEntity<EmpleadoDTO>(empleadoDTO,HttpStatus.OK);
+        return response;
 
     }
 
