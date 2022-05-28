@@ -14,13 +14,13 @@ public class EmpleadoEntity {
     private Integer id;
 
     @Lob
-    @Column(name = "cedula")
+    @Column(name = "cedula", unique = true)
     private String cedula;
 
     @Column(name = "nombre", length = 100)
     private String nombre;
 
-    @Column(name = "correo", length = 100)
+    @Column(name = "correo", length = 100, unique = true)
     private String correo;
 
     @Column(name = "direccion", length = 100)
