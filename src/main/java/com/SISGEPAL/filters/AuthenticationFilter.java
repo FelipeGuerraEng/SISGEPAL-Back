@@ -1,7 +1,7 @@
 package com.SISGEPAL.filters;
 
-import com.SISGEPAL.DTO.session.ErrorResponse;
-import com.SISGEPAL.entities.Empleado;
+import com.SISGEPAL.DTO.session.ErrorResponseDTO;
+import com.SISGEPAL.entities.EmpleadoEntity;
 import com.SISGEPAL.services.EmpleadoService;
 import com.SISGEPAL.services.SessionService;
 import com.SISGEPAL.utils.JWTUtil;
@@ -43,7 +43,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     try {
                         jwtUtil.isTokenExpired(token);
                         String cedula = jwtUtil.extractUsername(token);
-                        Empleado empleado = empleadoService.findEmpleadoByCedula(cedula);
+                        EmpleadoEntity empleado = empleadoService.findEmpleadoByCedula(cedula);
 
                         List<GrantedAuthority> claims = sessionService.createAuthorities(empleado);
                         setUpSpringAuthentication(claims, cedula);
@@ -53,6 +53,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     }
 
                 }
+            } else {
+                doNoTokenResponse(response);
+                return;
             }
         }
         filterChain.doFilter(request, response);
@@ -67,7 +70,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private void setUpSpringAuthentication(List<GrantedAuthority> claims, String cedula) {
         @SuppressWarnings("unchecked")
 
-
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(cedula,null,
                 claims);
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -75,7 +77,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void doNoTokenResponse(HttpServletResponse response) throws IOException {
-        ErrorResponse error = new ErrorResponse();
+        ErrorResponseDTO error = new ErrorResponseDTO();
         error.setError("Token no válido");
         ObjectMapper objectMapper = new ObjectMapper();
         String errorJson = objectMapper.writeValueAsString(error);

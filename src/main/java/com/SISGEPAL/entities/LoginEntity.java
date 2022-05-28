@@ -1,6 +1,5 @@
 package com.SISGEPAL.entities;
 
-import com.SISGEPAL.entities.Empleado;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,7 +7,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "login")
 @Data
-public class Login {
+public class LoginEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "login_id", nullable = false)
@@ -16,7 +15,7 @@ public class Login {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empleado_id", unique = true)
-    private Empleado empleado;
+    private EmpleadoEntity empleado;
 
     @Column(name = "usuario", length = 15, unique = true)
     private String usuario;
