@@ -13,6 +13,8 @@ import com.SISGEPAL.services.MailingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -26,6 +28,7 @@ public class EmpleadoController {
 
     @Autowired
     private MailingService mailingService;
+
 
     @GetMapping
     public ResponseEntity<EmpleadosDTO> getEmpleados(){
@@ -45,7 +48,7 @@ public class EmpleadoController {
         EmpleadoDTO empleadoDTO =
                 empleadoService.mapToEmpleadoDTO(empleadoService.createEmpleado(newEmpleadoDTO));
         ResponseEntity<EmpleadoDTO> response
-                = new ResponseEntity<EmpleadoDTO>(empleadoDTO,HttpStatus.OK);
+                = new ResponseEntity<EmpleadoDTO>(empleadoDTO,HttpStatus.CREATED);
         return response;
 
     }
@@ -56,6 +59,17 @@ public class EmpleadoController {
             throws BadRequestException, ConflictException, MessagingException, IOException, NotFoundException {
         EmpleadoDTO empleadoDTO =
                 empleadoService.mapToEmpleadoDTO(empleadoService.updateEmpleado(updateEmpleadoDTO,id));
+        ResponseEntity<EmpleadoDTO> response
+                = new ResponseEntity<EmpleadoDTO>(empleadoDTO,HttpStatus.OK);
+        return response;
+
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<EmpleadoDTO> deleteEmpleado(Authentication authentication, @PathVariable int id)
+            throws BadRequestException {
+        EmpleadoDTO empleadoDTO =
+                empleadoService.mapToEmpleadoDTO(empleadoService.deleteEmpleado(id, authentication.getPrincipal()));
         ResponseEntity<EmpleadoDTO> response
                 = new ResponseEntity<EmpleadoDTO>(empleadoDTO,HttpStatus.OK);
         return response;

@@ -14,4 +14,8 @@ public class AdministradorService {
     public boolean isAdministrador(EmpleadoEntity empleado){
         return administradorRepository.findByEmpleado(empleado) != null;
     }
+
+    public int howManyAdministradfores(){
+        return administradorRepository.findHowManyAdministradores();
+    }
 }

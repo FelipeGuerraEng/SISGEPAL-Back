@@ -70,7 +70,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private void setUpSpringAuthentication(List<GrantedAuthority> claims, String cedula) {
         @SuppressWarnings("unchecked")
 
-
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(cedula,null,
                 claims);
         SecurityContextHolder.getContext().setAuthentication(auth);

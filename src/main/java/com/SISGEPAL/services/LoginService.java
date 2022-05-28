@@ -40,8 +40,7 @@ public class LoginService {
 
         if(isValidNewLogin((userDTO))) {
             LoginEntity loginEntity = new LoginEntity();
-            String generatedPass = generatePassword();
-            String cipherPassword = passwordEncoder.encode(generatedPass);
+            String cipherPassword = passwordEncoder.encode(userDTO.getPassword());
 
             loginEntity.setUsuario(userDTO.getUsername());
             loginEntity.setEmpleado(empleado);

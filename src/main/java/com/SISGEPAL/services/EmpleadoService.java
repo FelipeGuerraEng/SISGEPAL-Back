@@ -27,6 +27,8 @@ public class EmpleadoService {
     private LoginService loginService;
     @Autowired
     private MailingService mailingService;
+    @Autowired
+    private AdministradorService administradorService;
 
     public EmpleadoEntity findEmpleadoByCedula(String cedula){
         return empleadoRepository.findByCedula(cedula);
@@ -68,9 +70,11 @@ public class EmpleadoService {
         final boolean isValidEmailFormat = isValidEmailFormat(correo);
         final boolean isRepeatedEmail = isRepeatedEmail(correo) == 1;
         final boolean isValidLogin = loginService.isValidNewLogin(empleadoDTO.getUserDTO());
+        final int repeatedCC = isRepeatedCC(empleadoDTO.getCedula());
+        final boolean isValidCC = repeatedCC == 0;
 
         if(isValidEmailFormat && !isRepeatedEmail
-                && isValidLogin) {
+                && isValidLogin && isValidCC) {
             EmpleadoEntity empleado = new EmpleadoEntity();
 
             empleado.setCedula(empleadoDTO.getCedula());
@@ -96,6 +100,10 @@ public class EmpleadoService {
 
             if(!isValidLogin) {
                 message = String.format("Usuario o contraseña no válidos");
+            }
+
+            if(!isValidCC) {
+                message = String.format("La cédula ya está en uso");
             }
         }
 
@@ -147,6 +155,24 @@ public class EmpleadoService {
 
         throw  new BadRequestException(message);
 
+    }
+
+    public EmpleadoEntity deleteEmpleado(int empleadoID, Object principal) throws BadRequestException {
+        EmpleadoEntity empleado = empleadoRepository.findById(empleadoID);
+        final int numAdmin = administradorService.howManyAdministradfores();
+        final boolean isAdmin = administradorService.isAdministrador(empleado);
+        final String ccAuthentication = (String) principal;
+        if(numAdmin == 1 && isAdmin){
+            throw new BadRequestException("No es posible eliminar el único administrador que existe");
+        }
+        if(ccAuthentication.equals(empleado.getCedula())){
+            throw new BadRequestException("No es posible eliminar un usuario que se encuentra en sesión");
+        }
+
+
+        empleadoRepository.delete(empleado);
+
+        return empleado;
     }
 
     public boolean isValidEmailFormat(String email) {
