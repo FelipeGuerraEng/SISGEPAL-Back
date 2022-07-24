@@ -10,5 +10,5 @@ public class NewEmpleadoDTO {
     private String correo;
     private String direccion;
     private String telefono;
-    private UserDTO userDTO;
+    private String username;
 }

@@ -26,33 +26,34 @@ public class LoginService {
     @Autowired
     private MailingService mailingService;
 
-    public boolean isValidNewLogin(UserDTO user) {
-        LoginEntity loginEntity = loginRepository.findByUsuario(user.getUsername());
-        return loginEntity == null && !user.getPassword().trim().equals("");
+    public boolean isValidNewLogin(String username) {
+        LoginEntity loginEntity = loginRepository.findByUsuario(username);
+        return loginEntity == null && !username.trim().equals("");
     }
 
     public String generatePassword(){
         return RandomString.make(passwordLength);
     }
 
-    public LoginEntity createLogin(UserDTO userDTO, EmpleadoEntity empleado)
+    public LoginEntity createLogin(String username, EmpleadoEntity empleado)
             throws ConflictException, MessagingException, IOException {
 
-        if(isValidNewLogin((userDTO))) {
+        if(isValidNewLogin((username))) {
             LoginEntity loginEntity = new LoginEntity();
-            String cipherPassword = passwordEncoder.encode(userDTO.getPassword());
+            String password = generatePassword();
+            String cipherPassword = passwordEncoder.encode(password);
 
-            loginEntity.setUsuario(userDTO.getUsername());
+            loginEntity.setUsuario(username);
             loginEntity.setEmpleado(empleado);
             loginEntity.setPassword(cipherPassword);
 
             loginEntity = loginRepository.save(loginEntity);
             mailingService.sendCredentialEmail(empleado.getCorreo()
-                    ,empleado.getNombre(),loginEntity.getUsuario(), userDTO.getPassword());
+                    ,empleado.getNombre(),loginEntity.getUsuario(), password);
             return loginEntity;
         }
 
         throw new ConflictException(String.format("Ya existe un usuario %s",
-                userDTO.getUsername()));
+                username));
     }
 }
