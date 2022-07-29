@@ -64,7 +64,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductoDTO> deleteProveedor(Authentication authentication, @PathVariable int id)
+    public ResponseEntity<ProductoDTO> deleteProducto(Authentication authentication, @PathVariable int id)
             throws BadRequestException {
         ProductoDTO productoDTO =
                 productoService.mapToProductoDTO(productoService.deleteProducto(id, authentication.getPrincipal()));
