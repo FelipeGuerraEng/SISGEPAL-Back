@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/session")
+@CrossOrigin("*")
 public class SessioController {
 
     @Autowired
