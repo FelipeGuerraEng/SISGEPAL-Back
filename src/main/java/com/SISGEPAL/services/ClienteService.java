@@ -148,9 +148,15 @@ public class ClienteService {
 
     }
 
-    public ClienteEntity deleteCliente(int clienteID, Object principal) throws BadRequestException {
+    public ClienteEntity deleteCliente(int clienteID, Object principal) throws BadRequestException, NotFoundException {
 
         ClienteEntity cliente = clienteRepository.findById(clienteID);
+
+        if(cliente == null) {
+            throw new NotFoundException(String.format(
+                    "No existe un cliente con id %d",clienteID
+            ));
+        }
 
         clienteRepository.delete(cliente);
 

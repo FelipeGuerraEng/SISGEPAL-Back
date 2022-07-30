@@ -67,7 +67,7 @@ public class EmpleadoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<EmpleadoDTO> deleteEmpleado(Authentication authentication, @PathVariable int id)
-            throws BadRequestException {
+            throws BadRequestException, NotFoundException {
         EmpleadoDTO empleadoDTO =
                 empleadoService.mapToEmpleadoDTO(empleadoService.deleteEmpleado(id, authentication.getPrincipal()));
         ResponseEntity<EmpleadoDTO> response

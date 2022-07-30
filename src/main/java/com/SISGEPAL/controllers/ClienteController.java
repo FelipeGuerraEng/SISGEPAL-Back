@@ -69,7 +69,7 @@ public class ClienteController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ClienteDTO> deleteCliente(Authentication authentication, @PathVariable int id)
-            throws BadRequestException {
+            throws BadRequestException, NotFoundException {
         ClienteDTO clienteDTO =
                 clienteService.mapToClienteDTO(clienteService.deleteCliente(id, authentication.getPrincipal()));
         ResponseEntity<ClienteDTO> response

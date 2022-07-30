@@ -155,9 +155,14 @@ public class ProveedorService {
 
         }
 
-    public ProveedorEntity deleteProveedor(int proveedorID, Object principal) throws BadRequestException {
-
+    public ProveedorEntity deleteProveedor(int proveedorID, Object principal) throws BadRequestException, NotFoundException {
         ProveedorEntity proveedor = proveedorRepository.findById(proveedorID);
+
+        if(proveedor == null) {
+            throw new NotFoundException(String.format(
+                    "No existe un proveedor con id %d",proveedorID
+            ));
+        }
 
         proveedorRepository.delete(proveedor);
 

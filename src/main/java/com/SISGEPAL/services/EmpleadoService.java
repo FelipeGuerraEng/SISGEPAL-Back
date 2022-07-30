@@ -157,22 +157,27 @@ public class EmpleadoService {
 
     }
 
-    public EmpleadoEntity deleteEmpleado(int empleadoID, Object principal) throws BadRequestException {
+    public EmpleadoEntity deleteEmpleado(int empleadoID, Object principal) throws BadRequestException, NotFoundException {
         EmpleadoEntity empleado = empleadoRepository.findById(empleadoID);
-        final int numAdmin = administradorService.howManyAdministradfores();
-        final boolean isAdmin = administradorService.isAdministrador(empleado);
-        final String ccAuthentication = (String) principal;
-        if(numAdmin == 1 && isAdmin){
-            throw new BadRequestException("No es posible eliminar el único administrador que existe");
+        if(empleado != null) {
+            final int numAdmin = administradorService.howManyAdministradfores();
+            final boolean isAdmin = administradorService.isAdministrador(empleado);
+            final String ccAuthentication = (String) principal;
+            if(numAdmin == 1 && isAdmin){
+                throw new BadRequestException("No es posible eliminar el único administrador que existe");
+            }
+            if(ccAuthentication.equals(empleado.getCedula())){
+                throw new BadRequestException("No es posible eliminar un usuario que se encuentra en sesión");
+            }
+
+
+            empleadoRepository.delete(empleado);
+
+            return empleado;
         }
-        if(ccAuthentication.equals(empleado.getCedula())){
-            throw new BadRequestException("No es posible eliminar un usuario que se encuentra en sesión");
-        }
-
-
-        empleadoRepository.delete(empleado);
-
-        return empleado;
+        throw new NotFoundException(String.format(
+                "No existe un empleado con id %d", empleadoID
+        ));
     }
 
     public boolean isValidEmailFormat(String email) {

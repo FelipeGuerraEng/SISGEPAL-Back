@@ -69,7 +69,7 @@ public class ProveedorController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ProveedorDTO> deleteProveedor(Authentication authentication, @PathVariable int id)
-            throws BadRequestException {
+            throws BadRequestException, NotFoundException {
         ProveedorDTO proveedorDTO =
                 proveedorService.mapToProveedorDTO(proveedorService.deleteProveedor(id, authentication.getPrincipal()));
         ResponseEntity<ProveedorDTO> response
