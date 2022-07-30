@@ -69,7 +69,7 @@ public class EmpleadoService {
         final String correo = empleadoDTO.getCorreo();
         final boolean isValidEmailFormat = isValidEmailFormat(correo);
         final boolean isRepeatedEmail = isRepeatedEmail(correo) == 1;
-        final boolean isValidLogin = loginService.isValidNewLogin(empleadoDTO.getUserDTO());
+        final boolean isValidLogin = loginService.isValidNewLogin(empleadoDTO.getUsername());
         final int repeatedCC = isRepeatedCC(empleadoDTO.getCedula());
         final boolean isValidCC = repeatedCC == 0;
 
@@ -84,7 +84,7 @@ public class EmpleadoService {
             empleado.setTelefono(empleadoDTO.getTelefono());
 
             empleado = empleadoRepository.save(empleado);
-            loginService.createLogin(empleadoDTO.getUserDTO(), empleado);
+            loginService.createLogin(empleadoDTO.getUsername(), empleado);
 
             return empleado;
         }

@@ -21,6 +21,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/empleados")
+@CrossOrigin("*")
 public class EmpleadoController {
     @Autowired
     private EmpleadoService empleadoService;
