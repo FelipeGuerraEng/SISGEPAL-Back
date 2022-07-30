@@ -35,7 +35,7 @@ private AdministradorService administradorService;
 
 
     public ProductoEntity findProductoByCodigo(String codigo){
-        return productoRepository.findByCodigo(codigo);
+        return productoRepository.findByCodigoProducto(codigo);
     }
 
 
@@ -65,9 +65,9 @@ public ProductoDTO mapToProductoDTO(ProductoEntity producto){
     ProductoDTO productoDTO = new ProductoDTO();
 
     productoDTO.setProducto_id(producto.getId());
-    productoDTO.setCodigo_producto(producto.getCodigo_producto());
+    productoDTO.setCodigo_producto(producto.getCodigoProducto());
     productoDTO.setNombre(producto.getNombre());
-    productoDTO.setProveedor_id(producto.getProovedor_id());
+    productoDTO.setProveedor_id(producto.getProveedor());
     productoDTO.setStock(producto.getStock());
     productoDTO.setPrecio(producto.getPrecio());
 
@@ -77,14 +77,14 @@ public ProductoDTO mapToProductoDTO(ProductoEntity producto){
     public ProductoEntity createProducto (NewProductoDTO productoDTO) throws BadRequestException, ConflictException, MessagingException, IOException {
         final String codigo = productoDTO.getCodigo_producto();
         String message = "";
-        final boolean isrepeatedCodigo = isRepeatedCodigo(productoDTO.getCodigo_producto());
+        final boolean isrepeatedCodigo = isRepeatedCodigo(productoDTO.getCodigo_producto(), -1);
 
 
         if(!isrepeatedCodigo) {
             ProductoEntity producto = new ProductoEntity();
 
-            producto.setCodigo_producto(productoDTO.getCodigo_producto());
-            producto.setProovedor_id(productoDTO.getProveedor_id());
+            producto.setCodigoProducto(productoDTO.getCodigo_producto());
+            producto.setProveedor(productoDTO.getProveedor_id());
             producto.setNombre(productoDTO.getNombre());
             producto.setStock(productoDTO.getStock());
             producto.setPrecio(productoDTO.getPrecio());
@@ -111,16 +111,15 @@ public ProductoDTO mapToProductoDTO(ProductoEntity producto){
             ));
         }else {
 
-            final boolean isValidUpdate = isRepeatedCodigo(productoDTO.getCodigo_producto())
-                    && producto.getNombre().equals(productoDTO.getNombre());
+            final boolean isValidUpdate = !isRepeatedCodigo(productoDTO.getCodigo_producto(),producto.getId());
 
             if (isValidUpdate) {
-                final String oldCodigo = producto.getCodigo_producto();
+                final String oldCodigo = producto.getCodigoProducto();
                 final String newCodigo = productoDTO.getCodigo_producto();
                 producto.setNombre(productoDTO.getNombre());
-                producto.setCodigo_producto(newCodigo);
+                producto.setCodigoProducto(newCodigo);
                 producto.setPrecio(productoDTO.getPrecio());
-                producto.setProovedor_id(productoDTO.getProveedor_id());
+                producto.setProveedor(productoDTO.getProveedor_id());
                 producto.setStock(productoDTO.getStock());
                 productoRepository.save(producto);
                 return producto;
@@ -150,8 +149,15 @@ public ProductoDTO mapToProductoDTO(ProductoEntity producto){
 
     }
 
-    public boolean isRepeatedCodigo(String codigo) {
-        return productoRepository.findByCodigo(codigo) != null ? true : false;
+    public boolean isRepeatedCodigo(String codigo, int id) {
+        boolean isRepeated = false;
+        if(id != -1) {
+            isRepeated = productoRepository.findByCodigoProductoAndIdNot(codigo, id) != null ? true : false;
+        } else {
+            isRepeated = productoRepository.findByCodigoProducto(codigo) != null ? true : false;
+        }
+
+        return isRepeated;
     }
 
 }

@@ -14,11 +14,10 @@ public class ProductoEntity {
 
     @Lob
     @Column(name = "codigo_producto",length =20, unique = true)
-    private String codigo_producto;
+    private String codigoProducto;
 
     @Column(name = "proveedor_id", unique = true)
-
-    private int proovedor_id;
+    private int proveedor;
 
 
     @Column(name = "nombre", length = 100)
