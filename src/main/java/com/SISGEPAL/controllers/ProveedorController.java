@@ -22,6 +22,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/proveedores")
+@CrossOrigin("*")
 public class ProveedorController {
 
     @Autowired
