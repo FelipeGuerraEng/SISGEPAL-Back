@@ -20,6 +20,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/productos")
+@CrossOrigin("*")
 public class ProductoController {
     @Autowired
     private ProductoService productoService;
@@ -64,7 +65,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductoDTO> deleteProveedor(Authentication authentication, @PathVariable int id)
+    public ResponseEntity<ProductoDTO> deleteProducto(Authentication authentication, @PathVariable int id)
             throws BadRequestException {
         ProductoDTO productoDTO =
                 productoService.mapToProductoDTO(productoService.deleteProducto(id, authentication.getPrincipal()));
